@@ -4,14 +4,28 @@ import UIKit
 final class WaterTrackerViewController: UIViewController {
 
     private let manager = WaterManager.shared
-    private let dailyGoal: Double = 2.0 // meta fixa de 2 litros
-
+    private var dailyGoal: Double = 2000 // meta fixa de 2000ml
+    
     // MARK: - UI Elements
+    
+    private var titleView: UILabel = {
+        let titleView = UILabel()
+        titleView.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        titleView.translatesAutoresizingMaskIntoConstraints = false
+        return titleView
+    }()
 
     private var progressView:  WaterProgressView =  {
         let progressView = WaterProgressView()
         progressView.translatesAutoresizingMaskIntoConstraints = false
         return progressView
+    }()
+    
+    private var titleProgressView: UILabel = {
+        let titleProgressView = UILabel()
+        titleProgressView.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        titleProgressView.translatesAutoresizingMaskIntoConstraints = false
+        return titleProgressView
     }()
 
     private let amountTextField: UITextField = {
@@ -24,8 +38,15 @@ final class WaterTrackerViewController: UIViewController {
     }()
 
     private let addButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        config.title = "Adicionar"
+        config.image = UIImage(systemName: "drop.fill") // ícone de gota
+        config.imagePlacement = .leading               // ícone à esquerda do texto
+        config.imagePadding = 8                        // espaço entre ícone e texto
+        config.cornerStyle = .medium
+        
         let button = UIButton(type: .system)
-        button.setTitle("Adicionar", for: .normal)
+        button.configuration = config
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -42,7 +63,7 @@ final class WaterTrackerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Água Hoje"
-        view.backgroundColor = .systemRed
+        titleView.text = "Meta de \(Int(dailyGoal))ml"
 
         setupViews()
         setupConstraints()
@@ -65,7 +86,9 @@ final class WaterTrackerViewController: UIViewController {
     // MARK: - Setup
 
     private func setupViews() {
+        view.addSubview(titleView)
         view.addSubview(progressView)
+        view.addSubview(titleProgressView)
         view.addSubview(amountTextField)
         view.addSubview(addButton)
         view.addSubview(tableView)
@@ -77,10 +100,17 @@ final class WaterTrackerViewController: UIViewController {
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
+            titleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            titleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             progressView.widthAnchor.constraint(equalToConstant: 150),
             progressView.heightAnchor.constraint(equalToConstant: 150),
-            progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            progressView.topAnchor.constraint(equalTo: titleView.bottomAnchor, constant: 20),
             progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            titleProgressView.topAnchor.constraint(equalTo: progressView.topAnchor),
+            titleProgressView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor),
+            titleProgressView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             amountTextField.topAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 20),
             amountTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -121,9 +151,11 @@ final class WaterTrackerViewController: UIViewController {
 
     private func updateUI() {
         let total = manager.todayTotal()
+        titleProgressView.text = "\(total) ml"
+        
         let ratio = min(Double(total) / dailyGoal, 1.0)
         print("Ratio", ratio)
-        progressView.progress = Float(0.5)
+        progressView.progress = Float(ratio)
         tableView.reloadData()
     }
 }
