@@ -21,9 +21,10 @@ final class WaterTrackerViewController: UIViewController {
         return progressView
     }()
     
+    
     private var titleProgressView: UILabel = {
         let titleProgressView = UILabel()
-        titleProgressView.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        titleProgressView.font = UIFont.systemFont(ofSize: 32, weight: .light)
         titleProgressView.translatesAutoresizingMaskIntoConstraints = false
         return titleProgressView
     }()
@@ -49,6 +50,14 @@ final class WaterTrackerViewController: UIViewController {
         button.configuration = config
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }()
+    
+    private let titleTableView: UILabel = {
+        let titleTableView = UILabel()
+        titleTableView.font = UIFont.preferredFont(forTextStyle: .title2)
+        titleTableView.text = "Registros de hoje"
+        titleTableView.translatesAutoresizingMaskIntoConstraints = false
+        return titleTableView
     }()
 
     private let tableView: UITableView = {
@@ -91,6 +100,7 @@ final class WaterTrackerViewController: UIViewController {
         view.addSubview(titleProgressView)
         view.addSubview(amountTextField)
         view.addSubview(addButton)
+        view.addSubview(titleTableView)
         view.addSubview(tableView)
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "EntryCell")
@@ -121,10 +131,13 @@ final class WaterTrackerViewController: UIViewController {
             addButton.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 10),
             addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             addButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            titleTableView.topAnchor.constraint(equalTo: amountTextField.bottomAnchor, constant: 50),
+            titleTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
 
-            tableView.topAnchor.constraint(equalTo: amountTextField.bottomAnchor, constant: 20),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: titleTableView.bottomAnchor, constant: 10),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
